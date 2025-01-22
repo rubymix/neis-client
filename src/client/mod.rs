@@ -5,19 +5,27 @@ use crate::types::*;
 use http_body_util::{BodyExt, Empty};
 use hyper::body::{Buf, Bytes};
 use hyper_tls::HttpsConnector;
-use hyper_util::{client::legacy::Client, rt::TokioExecutor};
+use hyper_util::{
+    client::legacy::{connect::HttpConnector, Client},
+    rt::TokioExecutor,
+};
 use response::ResponseBody;
 
 pub struct NeisClient {
     api_key: String,
+    client: Client<HttpsConnector<HttpConnector>, Empty<Bytes>>,
 }
 
 impl NeisClient {
     const BASE_URL: &'static str = "https://open.neis.go.kr";
 
     pub fn new(api_key: &str) -> Self {
+        let https = HttpsConnector::new();
+        let client = Client::builder(TokioExecutor::new()).build(https);
+
         Self {
             api_key: api_key.to_owned(),
+            client,
         }
     }
 
@@ -27,9 +35,6 @@ impl NeisClient {
         &self,
         params: SchoolInfoParams,
     ) -> Result<Vec<SchoolInfoItem>, Error> {
-        let https = HttpsConnector::new();
-        let client = Client::builder(TokioExecutor::new()).build::<_, Empty<Bytes>>(https);
-
         let mut page = 1;
         let page_size = 1000;
         let mut items = Vec::new();
@@ -45,7 +50,7 @@ impl NeisClient {
             };
             let url = format!("{}/hub/schoolInfo?{}", Self::BASE_URL, query);
 
-            let res = client.get(url.try_into().unwrap()).await?;
+            let res = self.client.get(url.try_into().unwrap()).await?;
             let status = res.status();
             let body = res.collect().await?.to_bytes();
             tracing::trace!(?body);
@@ -75,9 +80,6 @@ impl NeisClient {
     /// 학급정보
     /// https://open.neis.go.kr/portal/data/service/selectServicePage.do?page=1&rows=10&sortColumn=&sortDirection=&infId=OPEN15320190408174919197546&infSeq=2
     pub async fn class_info(&self, params: ClassInfoParams) -> Result<Vec<ClassInfoItem>, Error> {
-        let https = HttpsConnector::new();
-        let client = Client::builder(TokioExecutor::new()).build::<_, Empty<Bytes>>(https);
-
         let mut page = 1;
         let page_size = 1000;
         let mut items = Vec::new();
@@ -93,7 +95,7 @@ impl NeisClient {
             };
             let url = format!("{}/hub/classInfo?{}", Self::BASE_URL, query);
 
-            let res = client.get(url.try_into().unwrap()).await?;
+            let res = self.client.get(url.try_into().unwrap()).await?;
             let status = res.status();
             let body = res.collect().await?.to_bytes();
             tracing::trace!(?body);
@@ -126,9 +128,6 @@ impl NeisClient {
         &self,
         params: SchoolMajorInfoParams,
     ) -> Result<Vec<SchoolMajorInfoItem>, Error> {
-        let https = HttpsConnector::new();
-        let client = Client::builder(TokioExecutor::new()).build::<_, Empty<Bytes>>(https);
-
         let mut page = 1;
         let page_size = 1000;
         let mut items = Vec::new();
@@ -144,7 +143,7 @@ impl NeisClient {
             };
             let url = format!("{}/hub/schoolMajorinfo?{}", Self::BASE_URL, query);
 
-            let res = client.get(url.try_into().unwrap()).await?;
+            let res = self.client.get(url.try_into().unwrap()).await?;
             let status = res.status();
             let body = res.collect().await?.to_bytes();
             tracing::trace!(?body);
@@ -177,9 +176,6 @@ impl NeisClient {
         &self,
         params: SchoolAflcoInfoParams,
     ) -> Result<Vec<SchoolAflcoInfoItem>, Error> {
-        let https = HttpsConnector::new();
-        let client = Client::builder(TokioExecutor::new()).build::<_, Empty<Bytes>>(https);
-
         let mut page = 1;
         let page_size = 1000;
         let mut items = Vec::new();
@@ -195,7 +191,7 @@ impl NeisClient {
             };
             let url = format!("{}/hub/schulAflcoinfo?{}", Self::BASE_URL, query);
 
-            let res = client.get(url.try_into().unwrap()).await?;
+            let res = self.client.get(url.try_into().unwrap()).await?;
             let status = res.status();
             let body = res.collect().await?.to_bytes();
             tracing::trace!(?body);
@@ -228,9 +224,6 @@ impl NeisClient {
         &self,
         params: SchoolScheduleParams,
     ) -> Result<Vec<SchoolScheduleItem>, Error> {
-        let https = HttpsConnector::new();
-        let client = Client::builder(TokioExecutor::new()).build::<_, Empty<Bytes>>(https);
-
         let mut page = 1;
         let page_size = 1000;
         let mut items = Vec::new();
@@ -246,7 +239,7 @@ impl NeisClient {
             };
             let url = format!("{}/hub/SchoolSchedule?{}", Self::BASE_URL, query);
 
-            let res = client.get(url.try_into().unwrap()).await?;
+            let res = self.client.get(url.try_into().unwrap()).await?;
             let status = res.status();
             let body = res.collect().await?.to_bytes();
             tracing::trace!(?body);
@@ -279,9 +272,6 @@ impl NeisClient {
         &self,
         params: ElsTimetableParams,
     ) -> Result<Vec<ElsTimetableItem>, Error> {
-        let https = HttpsConnector::new();
-        let client = Client::builder(TokioExecutor::new()).build::<_, Empty<Bytes>>(https);
-
         let mut page = 1;
         let page_size = 1000;
         let mut items = Vec::new();
@@ -297,7 +287,7 @@ impl NeisClient {
             };
             let url = format!("{}/hub/elsTimetable?{}", Self::BASE_URL, query);
 
-            let res = client.get(url.try_into().unwrap()).await?;
+            let res = self.client.get(url.try_into().unwrap()).await?;
             let status = res.status();
             let body = res.collect().await?.to_bytes();
             tracing::trace!(?body);
@@ -330,9 +320,6 @@ impl NeisClient {
         &self,
         params: MisTimetableParams,
     ) -> Result<Vec<MisTimetableItem>, Error> {
-        let https = HttpsConnector::new();
-        let client = Client::builder(TokioExecutor::new()).build::<_, Empty<Bytes>>(https);
-
         let mut page = 1;
         let page_size = 1000;
         let mut items = Vec::new();
@@ -348,7 +335,7 @@ impl NeisClient {
             };
             let url = format!("{}/hub/misTimetable?{}", Self::BASE_URL, query);
 
-            let res = client.get(url.try_into().unwrap()).await?;
+            let res = self.client.get(url.try_into().unwrap()).await?;
             let status = res.status();
             let body = res.collect().await?.to_bytes();
             tracing::trace!(?body);
@@ -381,9 +368,6 @@ impl NeisClient {
         &self,
         params: HisTimetableParams,
     ) -> Result<Vec<HisTimetableItem>, Error> {
-        let https = HttpsConnector::new();
-        let client = Client::builder(TokioExecutor::new()).build::<_, Empty<Bytes>>(https);
-
         let mut page = 1;
         let page_size = 1000;
         let mut items = Vec::new();
@@ -399,7 +383,7 @@ impl NeisClient {
             };
             let url = format!("{}/hub/hisTimetable?{}", Self::BASE_URL, query);
 
-            let res = client.get(url.try_into().unwrap()).await?;
+            let res = self.client.get(url.try_into().unwrap()).await?;
             let status = res.status();
             let body = res.collect().await?.to_bytes();
             tracing::trace!(?body);
@@ -432,9 +416,6 @@ impl NeisClient {
         &self,
         params: SpsTimetableParams,
     ) -> Result<Vec<SpsTimetableItem>, Error> {
-        let https = HttpsConnector::new();
-        let client = Client::builder(TokioExecutor::new()).build::<_, Empty<Bytes>>(https);
-
         let mut page = 1;
         let page_size = 1000;
         let mut items = Vec::new();
@@ -450,7 +431,7 @@ impl NeisClient {
             };
             let url = format!("{}/hub/spsTimetable?{}", Self::BASE_URL, query);
 
-            let res = client.get(url.try_into().unwrap()).await?;
+            let res = self.client.get(url.try_into().unwrap()).await?;
             let status = res.status();
             let body = res.collect().await?.to_bytes();
             tracing::trace!(?body);
@@ -483,9 +464,6 @@ impl NeisClient {
         &self,
         params: ClassRoomInfoParams,
     ) -> Result<Vec<ClassRoomInfoItem>, Error> {
-        let https = HttpsConnector::new();
-        let client = Client::builder(TokioExecutor::new()).build::<_, Empty<Bytes>>(https);
-
         let mut page = 1;
         let page_size = 1000;
         let mut items = Vec::new();
@@ -501,7 +479,7 @@ impl NeisClient {
             };
             let url = format!("{}/hub/tiClrminfo?{}", Self::BASE_URL, query);
 
-            let res = client.get(url.try_into().unwrap()).await?;
+            let res = self.client.get(url.try_into().unwrap()).await?;
             let status = res.status();
             let body = res.collect().await?.to_bytes();
             tracing::trace!(?body);
@@ -534,9 +512,6 @@ impl NeisClient {
         &self,
         params: AcademyInfoParams,
     ) -> Result<Vec<AcademyInfoItem>, Error> {
-        let https = HttpsConnector::new();
-        let client = Client::builder(TokioExecutor::new()).build::<_, Empty<Bytes>>(https);
-
         let mut page = 1;
         let page_size = 1000;
         let mut items = Vec::new();
@@ -552,7 +527,7 @@ impl NeisClient {
             };
             let url = format!("{}/hub/acaInsTiInfo?{}", Self::BASE_URL, query);
 
-            let res = client.get(url.try_into().unwrap()).await?;
+            let res = self.client.get(url.try_into().unwrap()).await?;
             let status = res.status();
             let body = res.collect().await?.to_bytes();
             tracing::trace!(?body);
@@ -585,9 +560,6 @@ impl NeisClient {
         &self,
         params: MealServiceParams,
     ) -> Result<Vec<MealServiceItem>, Error> {
-        let https = HttpsConnector::new();
-        let client = Client::builder(TokioExecutor::new()).build::<_, Empty<Bytes>>(https);
-
         let mut page = 1;
         let page_size = 1000;
         let mut items = Vec::new();
@@ -603,7 +575,7 @@ impl NeisClient {
             };
             let url = format!("{}/hub/mealServiceDietInfo?{}", Self::BASE_URL, query);
 
-            let res = client.get(url.try_into().unwrap()).await?;
+            let res = self.client.get(url.try_into().unwrap()).await?;
             let status = res.status();
             let body = res.collect().await?.to_bytes();
             tracing::trace!(?body);
