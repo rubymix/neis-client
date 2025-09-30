@@ -7,5 +7,5 @@ https://open.neis.go.kr/
 
 ```toml
 [dependencies]
-neis-client = "1.0"
+neis-client = "1.1"
 ```
