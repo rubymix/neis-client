@@ -6,7 +6,7 @@ use http_body_util::{BodyExt, Empty};
 use hyper::body::{Buf, Bytes};
 use hyper_tls::HttpsConnector;
 use hyper_util::{
-    client::legacy::{connect::HttpConnector, Client},
+    client::legacy::{Client, connect::HttpConnector},
     rt::TokioExecutor,
 };
 use response::{ExtractFromResponse, ResponseBody};
@@ -40,7 +40,7 @@ impl NeisClient {
     /// let client = NeisClient::new(&api_key);
     ///
     /// let params = SchoolInfoParams {
-    ///     SD_SCHUL_CODE: Some(String::from("7031115")),
+    ///     SD_SCHUL_CODE: Some(String::from("7010959")),
     ///     ..Default::default()
     /// };
     /// let items = client.school_info(params).await?;
@@ -51,7 +51,7 @@ impl NeisClient {
         &self,
         params: SchoolInfoParams,
     ) -> Result<Vec<SchoolInfoItem>, Error> {
-        self.request("/schoolInfo", params).await
+        self.request("schoolInfo", params).await
     }
 
     /// 학급정보
@@ -66,13 +66,13 @@ impl NeisClient {
     /// let api_key = std::env::var("NEIS_API_KEY").unwrap();
     /// let client = NeisClient::new(&api_key);
     ///
-    /// let params = ClassInfoParams::new("B10", "7031115");
+    /// let params = ClassInfoParams::new("B10", "7010959");
     /// let items = client.class_info(params).await?;
     /// # Ok(())
     /// # }
     /// ```
     pub async fn class_info(&self, params: ClassInfoParams) -> Result<Vec<ClassInfoItem>, Error> {
-        self.request("/classInfo", params).await
+        self.request("classInfo", params).await
     }
 
     /// 학교학과정보
@@ -87,7 +87,7 @@ impl NeisClient {
     /// let api_key = std::env::var("NEIS_API_KEY").unwrap();
     /// let client = NeisClient::new(&api_key);
     ///
-    /// let params = SchoolMajorInfoParams::new("B10").school_code("7031115");
+    /// let params = SchoolMajorInfoParams::new("B10").school_code("7010959");
     /// let items = client.school_major_info(params).await?;
     /// # Ok(())
     /// # }
@@ -96,7 +96,7 @@ impl NeisClient {
         &self,
         params: SchoolMajorInfoParams,
     ) -> Result<Vec<SchoolMajorInfoItem>, Error> {
-        self.request("/schoolMajorinfo", params).await
+        self.request("schoolMajorinfo", params).await
     }
 
     /// 학교계열정보
@@ -111,7 +111,7 @@ impl NeisClient {
     /// let api_key = std::env::var("NEIS_API_KEY").unwrap();
     /// let client = NeisClient::new(&api_key);
     ///
-    /// let params = SchoolAflcoInfoParams::new("B10").school_code("7031115");
+    /// let params = SchoolAflcoInfoParams::new("B10").school_code("7010959");
     /// let items = client.school_aflco_info(params).await?;
     /// # Ok(())
     /// # }
@@ -120,7 +120,7 @@ impl NeisClient {
         &self,
         params: SchoolAflcoInfoParams,
     ) -> Result<Vec<SchoolAflcoInfoItem>, Error> {
-        self.request("/schulAflcoinfo", params).await
+        self.request("schulAflcoinfo", params).await
     }
 
     /// 학사일정
@@ -135,7 +135,7 @@ impl NeisClient {
     /// let api_key = std::env::var("NEIS_API_KEY").unwrap();
     /// let client = NeisClient::new(&api_key);
     ///
-    /// let params = SchoolScheduleParams::new("B10", "7031115");
+    /// let params = SchoolScheduleParams::new("B10", "7010959");
     /// let items = client.school_schedule(params).await?;
     /// # Ok(())
     /// # }
@@ -144,7 +144,7 @@ impl NeisClient {
         &self,
         params: SchoolScheduleParams,
     ) -> Result<Vec<SchoolScheduleItem>, Error> {
-        self.request("/SchoolSchedule", params).await
+        self.request("SchoolSchedule", params).await
     }
 
     /// 초등학교시간표
@@ -159,7 +159,7 @@ impl NeisClient {
     /// let api_key = std::env::var("NEIS_API_KEY").unwrap();
     /// let client = NeisClient::new(&api_key);
     ///
-    /// let params = ElsTimetableParams::new("B10", "7031115");
+    /// let params = ElsTimetableParams::new("B10", "7130126").grade(6).sem(2);
     /// let items = client.els_timetable(params).await?;
     /// # Ok(())
     /// # }
@@ -168,7 +168,7 @@ impl NeisClient {
         &self,
         params: ElsTimetableParams,
     ) -> Result<Vec<ElsTimetableItem>, Error> {
-        self.request("/elsTimetable", params).await
+        self.request("elsTimetable", params).await
     }
 
     /// 중학교시간표
@@ -183,7 +183,7 @@ impl NeisClient {
     /// let api_key = std::env::var("NEIS_API_KEY").unwrap();
     /// let client = NeisClient::new(&api_key);
     ///
-    /// let params = MisTimetableParams::new("D10", "7261011");
+    /// let params = MisTimetableParams::new("B10", "7130177").grade(3).sem(2);
     /// let items = client.mis_timetable(params).await?;
     /// # Ok(())
     /// # }
@@ -192,7 +192,7 @@ impl NeisClient {
         &self,
         params: MisTimetableParams,
     ) -> Result<Vec<MisTimetableItem>, Error> {
-        self.request("/misTimetable", params).await
+        self.request("misTimetable", params).await
     }
 
     /// 고등학교시간표
@@ -207,7 +207,7 @@ impl NeisClient {
     /// let api_key = std::env::var("NEIS_API_KEY").unwrap();
     /// let client = NeisClient::new(&api_key);
     ///
-    /// let params = HisTimetableParams::new("D10", "7240090");
+    /// let params = HisTimetableParams::new("B10", "7010959").grade(3).sem(2)
     /// let items = client.his_timetable(params).await?;
     /// # Ok(())
     /// # }
@@ -216,7 +216,7 @@ impl NeisClient {
         &self,
         params: HisTimetableParams,
     ) -> Result<Vec<HisTimetableItem>, Error> {
-        self.request("/hisTimetable", params).await
+        self.request("hisTimetable", params).await
     }
 
     /// 특수학교시간표
@@ -240,7 +240,7 @@ impl NeisClient {
         &self,
         params: SpsTimetableParams,
     ) -> Result<Vec<SpsTimetableItem>, Error> {
-        self.request("/spsTimetable", params).await
+        self.request("spsTimetable", params).await
     }
 
     /// 시간표강의실정보
@@ -255,7 +255,7 @@ impl NeisClient {
     /// let api_key = std::env::var("NEIS_API_KEY").unwrap();
     /// let client = NeisClient::new(&api_key);
     ///
-    /// let params = ClassRoomInfoParams::new("B10", "7010575");
+    /// let params = ClassRoomInfoParams::new("B10", "7010959");
     /// let items = client.class_room_info(params).await?;
     /// # Ok(())
     /// # }
@@ -264,7 +264,7 @@ impl NeisClient {
         &self,
         params: ClassRoomInfoParams,
     ) -> Result<Vec<ClassRoomInfoItem>, Error> {
-        self.request("/tiClrminfo", params).await
+        self.request("tiClrminfo", params).await
     }
 
     /// 학원교습소정보
@@ -279,7 +279,7 @@ impl NeisClient {
     /// let api_key = std::env::var("NEIS_API_KEY").unwrap();
     /// let client = NeisClient::new(&api_key);
     ///
-    /// let params = AcademyInfoParams::new("D10");
+    /// let params = AcademyInfoParams::new("B10");
     /// let items = client.academy_info(params).await?;
     /// # Ok(())
     /// # }
@@ -288,7 +288,7 @@ impl NeisClient {
         &self,
         params: AcademyInfoParams,
     ) -> Result<Vec<AcademyInfoItem>, Error> {
-        self.request("/acaInsTiInfo", params).await
+        self.request("acaInsTiInfo", params).await
     }
 
     /// 급식식단정보
@@ -312,7 +312,7 @@ impl NeisClient {
         &self,
         params: MealServiceParams,
     ) -> Result<Vec<MealServiceItem>, Error> {
-        self.request("/mealServiceDietInfo", params).await
+        self.request("mealServiceDietInfo", params).await
     }
 
     pub async fn request<P, T>(&self, resouce: &str, params: P) -> Result<Vec<T>, Error>
@@ -345,6 +345,7 @@ impl NeisClient {
                 let data: ResponseBody = serde_json::from_reader(body.reader())?;
 
                 let (total, row) = T::extract_from_response(data);
+                println!("total: {}, page: {}, page_size: {}", total, page, page_size);
 
                 items.extend(row);
 

@@ -1,10 +1,10 @@
 #![allow(non_snake_case)]
-use super::deserialize_i32_from_string;
 use super::ToQueryString;
+use super::deserialize_i32_from_string;
 use form_urlencoded::Serializer;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct SchoolScheduleParams {
     /// 시도교육청코드
     pub ATPT_OFCDC_SC_CODE: String,
@@ -75,44 +75,74 @@ impl ToQueryString for SchoolScheduleParams {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Hash)]
 pub struct SchoolScheduleItem {
     /// 시도교육청코드
+    /// B10 | C10 | D10 | E10 | F10 | G10 | H10 | I10 | J10 | K10 | M10 | N10 | P10 | Q10 | R10 | S10 | T10 | V10
     pub ATPT_OFCDC_SC_CODE: String,
+
     /// 시도교육청명
+    /// Example: 서울특별시교육청
     pub ATPT_OFCDC_SC_NM: String,
+
     /// 행정표준코드
+    /// Example: 7010959
     pub SD_SCHUL_CODE: String,
+
     /// 학교명
+    /// Example: 문현고등학교
     pub SCHUL_NM: String,
+
     /// 학년도
+    /// Example: 2024
     #[serde(deserialize_with = "deserialize_i32_from_string")]
     pub AY: i32,
+
     /// 주야과정명
+    /// Example: 주간
     pub DGHT_CRSE_SC_NM: Option<String>,
+
     /// 학교과정명
+    /// Example: 고등학교
     pub SCHUL_CRSE_SC_NM: Option<String>,
+
     /// 수업공제일명
+    /// Example: 휴업일
     pub SBTR_DD_SC_NM: Option<String>,
+
     /// 학사일자
+    /// Example: 20240309
     pub AA_YMD: String,
+
     /// 행사명
+    /// Example: 토요휴업일
     pub EVENT_NM: String,
+
     /// 행사내용
+    /// Example:
     pub EVENT_CNTNT: String,
+
     /// 1학년행사여부
-    pub ONE_GRADE_EVENT_YN: String, // Y | N
+    /// Y | N
+    pub ONE_GRADE_EVENT_YN: String,
     /// 2학년행사여부
-    pub TW_GRADE_EVENT_YN: String, // Y | N
+    /// Y | N
+    pub TW_GRADE_EVENT_YN: String,
     /// 3학년행사여부
-    pub THREE_GRADE_EVENT_YN: String, // Y | N
+    /// Y | N
+    pub THREE_GRADE_EVENT_YN: String,
     /// 4학년행사여부
-    pub FR_GRADE_EVENT_YN: String, // Y | N | *
+    /// Y | N | *
+    pub FR_GRADE_EVENT_YN: String,
     /// 5학년행사여부
-    pub FIV_GRADE_EVENT_YN: String, // Y | N | *
+    /// Y | N | *
+    pub FIV_GRADE_EVENT_YN: String,
     /// 6학년행사여부
-    pub SIX_GRADE_EVENT_YN: String, // Y | N | *
+    /// Y | N | *
+    pub SIX_GRADE_EVENT_YN: String,
+
     /// 수정일자
+    /// Example: 20250930
     pub LOAD_DTM: String,
 }
 

@@ -4,7 +4,7 @@ use super::{deserialize_i32_from_string, deserialize_u8_from_string};
 use form_urlencoded::Serializer;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct HisTimetableParams {
     /// 시도교육청코드
     pub ATPT_OFCDC_SC_CODE: String,
@@ -123,42 +123,73 @@ impl ToQueryString for HisTimetableParams {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Hash)]
 pub struct HisTimetableItem {
     /// 시도교육청코드
+    /// B10 | C10 | D10 | E10 | F10 | G10 | H10 | I10 | J10 | K10 | M10 | N10 | P10 | Q10 | R10 | S10 | T10 | V10
     pub ATPT_OFCDC_SC_CODE: String,
+
     /// 시도교육청명
+    /// Example: 서울특별시교육청
     pub ATPT_OFCDC_SC_NM: String,
+
     /// 행정표준코드
+    /// Example: 7010959
     pub SD_SCHUL_CODE: String,
+
     /// 학교명
+    /// Example: 문현고등학교
     pub SCHUL_NM: String,
+
     /// 학년도
+    /// Example: 2023
     #[serde(deserialize_with = "deserialize_i32_from_string")]
     pub AY: i32,
+
     /// 학기
+    /// Example: 2
     #[serde(deserialize_with = "deserialize_u8_from_string")]
     pub SEM: u8,
+
     /// 시간표일자
+    /// Example: 20230821
     pub ALL_TI_YMD: String,
+
     /// 주야과정명
+    /// Example: 주간
     pub DGHT_CRSE_SC_NM: Option<String>,
+
     /// 계열명
+    /// Example: 일반계
     pub ORD_SC_NM: Option<String>,
+
     /// 학과명
+    /// Example: 일반학과
     pub DDDEP_NM: Option<String>,
+
     /// 학년
+    /// Example: 3
     #[serde(deserialize_with = "deserialize_u8_from_string")]
     pub GRADE: u8,
+
     /// 강의실명
+    /// Example: 301
     pub CLRM_NM: Option<String>,
+
     /// 학급명
+    /// Example: 1
     pub CLASS_NM: Option<String>,
+
     /// 교시
+    /// Example: 5
     #[serde(deserialize_with = "deserialize_u8_from_string")]
     pub PERIO: u8,
+
     /// 수업내용
+    /// Example: [보강]음악 감상과 비평
     pub ITRT_CNTNT: Option<String>,
+
     /// 수정일자
+    /// Example: 20230827
     pub LOAD_DTM: String,
 }

@@ -25,7 +25,7 @@ pub use school_schedule::{SchoolScheduleItem, SchoolScheduleParams};
 use serde::Deserialize;
 pub use sps_timetable::{SpsTimetableItem, SpsTimetableParams};
 
-#[derive(Debug, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Hash, PartialEq)]
 pub enum YesOrNo {
     Y,
     N,
