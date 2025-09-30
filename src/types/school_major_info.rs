@@ -1,4 +1,5 @@
 #![allow(non_snake_case)]
+use super::ToQueryString;
 use form_urlencoded::Serializer;
 use serde::{Deserialize, Serialize};
 
@@ -28,8 +29,10 @@ impl SchoolMajorInfoParams {
         self.SD_SCHUL_CODE = Some(s.to_owned());
         self
     }
+}
 
-    pub fn to_serializer(&self) -> Serializer<String> {
+impl ToQueryString for SchoolMajorInfoParams {
+    fn to_query_string(&self) -> String {
         let mut serializer = Serializer::new(String::new());
 
         serializer.append_pair("ATPT_OFCDC_SC_CODE", &self.ATPT_OFCDC_SC_CODE);
@@ -43,7 +46,7 @@ impl SchoolMajorInfoParams {
             serializer.append_pair("ORD_SC_NM", s);
         }
 
-        serializer
+        serializer.finish()
     }
 }
 

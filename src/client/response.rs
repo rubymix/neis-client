@@ -59,3 +59,129 @@ pub enum ResponseBody {
     acaInsTiInfo((ResultHead, ResultBody<AcademyInfoItem>)), // 배열
     mealServiceDietInfo((ResultHead, ResultBody<MealServiceItem>)), // 배열
 }
+
+pub trait ExtractFromResponse {
+    fn extract_from_response(response: ResponseBody) -> (usize, Vec<Self>)
+    where
+        Self: Sized;
+}
+
+impl ExtractFromResponse for SchoolInfoItem {
+    fn extract_from_response(response: ResponseBody) -> (usize, Vec<Self>) {
+        if let ResponseBody::schoolInfo((head, data)) = response {
+            (head.get_total_count(), data.row)
+        } else {
+            Default::default()
+        }
+    }
+}
+
+impl ExtractFromResponse for ClassInfoItem {
+    fn extract_from_response(response: ResponseBody) -> (usize, Vec<Self>) {
+        if let ResponseBody::classInfo((head, data)) = response {
+            (head.get_total_count(), data.row)
+        } else {
+            Default::default()
+        }
+    }
+}
+
+impl ExtractFromResponse for SchoolMajorInfoItem {
+    fn extract_from_response(response: ResponseBody) -> (usize, Vec<Self>) {
+        if let ResponseBody::schoolMajorinfo((head, data)) = response {
+            (head.get_total_count(), data.row)
+        } else {
+            Default::default()
+        }
+    }
+}
+
+impl ExtractFromResponse for SchoolAflcoInfoItem {
+    fn extract_from_response(response: ResponseBody) -> (usize, Vec<Self>) {
+        if let ResponseBody::schulAflcoinfo((head, data)) = response {
+            (head.get_total_count(), data.row)
+        } else {
+            Default::default()
+        }
+    }
+}
+
+impl ExtractFromResponse for SchoolScheduleItem {
+    fn extract_from_response(response: ResponseBody) -> (usize, Vec<Self>) {
+        if let ResponseBody::SchoolSchedule((head, data)) = response {
+            (head.get_total_count(), data.row)
+        } else {
+            Default::default()
+        }
+    }
+}
+
+impl ExtractFromResponse for ElsTimetableItem {
+    fn extract_from_response(response: ResponseBody) -> (usize, Vec<Self>) {
+        if let ResponseBody::elsTimetable((head, data)) = response {
+            (head.get_total_count(), data.row)
+        } else {
+            Default::default()
+        }
+    }
+}
+
+impl ExtractFromResponse for MisTimetableItem {
+    fn extract_from_response(response: ResponseBody) -> (usize, Vec<Self>) {
+        if let ResponseBody::misTimetable((head, data)) = response {
+            (head.get_total_count(), data.row)
+        } else {
+            Default::default()
+        }
+    }
+}
+
+impl ExtractFromResponse for HisTimetableItem {
+    fn extract_from_response(response: ResponseBody) -> (usize, Vec<Self>) {
+        if let ResponseBody::hisTimetable((head, data)) = response {
+            (head.get_total_count(), data.row)
+        } else {
+            Default::default()
+        }
+    }
+}
+
+impl ExtractFromResponse for SpsTimetableItem {
+    fn extract_from_response(response: ResponseBody) -> (usize, Vec<Self>) {
+        if let ResponseBody::spsTimetable((head, data)) = response {
+            (head.get_total_count(), data.row)
+        } else {
+            Default::default()
+        }
+    }
+}
+
+impl ExtractFromResponse for ClassRoomInfoItem {
+    fn extract_from_response(response: ResponseBody) -> (usize, Vec<Self>) {
+        if let ResponseBody::tiClrminfo((head, data)) = response {
+            (head.get_total_count(), data.row)
+        } else {
+            Default::default()
+        }
+    }
+}
+
+impl ExtractFromResponse for AcademyInfoItem {
+    fn extract_from_response(response: ResponseBody) -> (usize, Vec<Self>) {
+        if let ResponseBody::acaInsTiInfo((head, data)) = response {
+            (head.get_total_count(), data.row)
+        } else {
+            Default::default()
+        }
+    }
+}
+
+impl ExtractFromResponse for MealServiceItem {
+    fn extract_from_response(response: ResponseBody) -> (usize, Vec<Self>) {
+        if let ResponseBody::mealServiceDietInfo((head, data)) = response {
+            (head.get_total_count(), data.row)
+        } else {
+            Default::default()
+        }
+    }
+}

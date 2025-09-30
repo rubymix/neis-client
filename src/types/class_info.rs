@@ -1,4 +1,5 @@
 #![allow(non_snake_case)]
+use super::ToQueryString;
 use super::{deserialize_i32_from_string, deserialize_u8_from_string};
 use form_urlencoded::Serializer;
 use serde::{Deserialize, Serialize};
@@ -45,8 +46,10 @@ impl ClassInfoParams {
         self.GRADE = Some(grade.to_string());
         self
     }
+}
 
-    pub fn to_serializer(&self) -> Serializer<String> {
+impl ToQueryString for ClassInfoParams {
+    fn to_query_string(&self) -> String {
         let mut serializer = Serializer::new(String::new());
 
         serializer.append_pair("ATPT_OFCDC_SC_CODE", &self.ATPT_OFCDC_SC_CODE);
@@ -70,7 +73,7 @@ impl ClassInfoParams {
             serializer.append_pair("DDDEP_NM", s);
         }
 
-        serializer
+        serializer.finish()
     }
 }
 

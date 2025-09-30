@@ -1,4 +1,5 @@
 #![allow(non_snake_case)]
+use super::ToQueryString;
 use super::{deserialize_i32_from_string, deserialize_u8_from_string};
 use form_urlencoded::Serializer;
 use serde::{Deserialize, Serialize};
@@ -52,8 +53,10 @@ impl ClassRoomInfoParams {
         self.SEM = Some(sem.to_string());
         self
     }
+}
 
-    pub fn to_serializer(&self) -> Serializer<String> {
+impl ToQueryString for ClassRoomInfoParams {
+    fn to_query_string(&self) -> String {
         let mut serializer = Serializer::new(String::new());
 
         serializer.append_pair("ATPT_OFCDC_SC_CODE", &self.ATPT_OFCDC_SC_CODE);
@@ -80,7 +83,7 @@ impl ClassRoomInfoParams {
             serializer.append_pair("DDDEP_NM", s);
         }
 
-        serializer
+        serializer.finish()
     }
 }
 

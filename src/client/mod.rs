@@ -9,7 +9,7 @@ use hyper_util::{
     client::legacy::{connect::HttpConnector, Client},
     rt::TokioExecutor,
 };
-use response::ResponseBody;
+use response::{ExtractFromResponse, ResponseBody};
 
 pub struct NeisClient {
     api_key: String,
@@ -17,8 +17,6 @@ pub struct NeisClient {
 }
 
 impl NeisClient {
-    const BASE_URL: &'static str = "https://open.neis.go.kr";
-
     pub fn new(api_key: &str) -> Self {
         let https = HttpsConnector::new();
         let client = Client::builder(TokioExecutor::new()).build(https);
@@ -53,46 +51,7 @@ impl NeisClient {
         &self,
         params: SchoolInfoParams,
     ) -> Result<Vec<SchoolInfoItem>, Error> {
-        let mut page = 1;
-        let page_size = 1000;
-        let mut items = Vec::new();
-
-        loop {
-            let query = {
-                let mut query = params.to_serializer();
-                query.append_pair("KEY", &self.api_key);
-                query.append_pair("Type", "json");
-                query.append_pair("pSize", &page_size.to_string());
-                query.append_pair("pIndex", &page.to_string());
-                query.finish()
-            };
-            let url = format!("{}/hub/schoolInfo?{}", Self::BASE_URL, query);
-
-            let res = self.client.get(url.try_into().unwrap()).await?;
-            let status = res.status();
-            let body = res.collect().await?.to_bytes();
-            tracing::trace!(?body);
-
-            if status.is_success() {
-                let data: ResponseBody = serde_json::from_reader(body.reader())?;
-
-                if let ResponseBody::schoolInfo((head, body)) = data {
-                    items.extend(body.row);
-
-                    if head.get_total_count() > page * page_size {
-                        page += 1;
-                    } else {
-                        break; // while loop
-                    }
-                } else {
-                    break; // while loop
-                }
-            } else {
-                return Err(Error::new_unknown(&format!("status: {}", status)));
-            }
-        }
-
-        Ok(items)
+        self.request("/schoolInfo", params).await
     }
 
     /// 학급정보
@@ -113,46 +72,7 @@ impl NeisClient {
     /// # }
     /// ```
     pub async fn class_info(&self, params: ClassInfoParams) -> Result<Vec<ClassInfoItem>, Error> {
-        let mut page = 1;
-        let page_size = 1000;
-        let mut items = Vec::new();
-
-        loop {
-            let query = {
-                let mut query = params.to_serializer();
-                query.append_pair("KEY", &self.api_key);
-                query.append_pair("Type", "json");
-                query.append_pair("pSize", &page_size.to_string());
-                query.append_pair("pIndex", &page.to_string());
-                query.finish()
-            };
-            let url = format!("{}/hub/classInfo?{}", Self::BASE_URL, query);
-
-            let res = self.client.get(url.try_into().unwrap()).await?;
-            let status = res.status();
-            let body = res.collect().await?.to_bytes();
-            tracing::trace!(?body);
-
-            if status.is_success() {
-                let data: ResponseBody = serde_json::from_reader(body.reader())?;
-
-                if let ResponseBody::classInfo((head, body)) = data {
-                    items.extend(body.row);
-
-                    if head.get_total_count() > page * page_size {
-                        page += 1;
-                    } else {
-                        break; // while loop
-                    }
-                } else {
-                    break; // while loop
-                }
-            } else {
-                return Err(Error::new_unknown(&format!("status: {}", status)));
-            }
-        }
-
-        Ok(items)
+        self.request("/classInfo", params).await
     }
 
     /// 학교학과정보
@@ -176,46 +96,7 @@ impl NeisClient {
         &self,
         params: SchoolMajorInfoParams,
     ) -> Result<Vec<SchoolMajorInfoItem>, Error> {
-        let mut page = 1;
-        let page_size = 1000;
-        let mut items = Vec::new();
-
-        loop {
-            let query = {
-                let mut query = params.to_serializer();
-                query.append_pair("KEY", &self.api_key);
-                query.append_pair("Type", "json");
-                query.append_pair("pSize", &page_size.to_string());
-                query.append_pair("pIndex", &page.to_string());
-                query.finish()
-            };
-            let url = format!("{}/hub/schoolMajorinfo?{}", Self::BASE_URL, query);
-
-            let res = self.client.get(url.try_into().unwrap()).await?;
-            let status = res.status();
-            let body = res.collect().await?.to_bytes();
-            tracing::trace!(?body);
-
-            if status.is_success() {
-                let data: ResponseBody = serde_json::from_reader(body.reader())?;
-
-                if let ResponseBody::schoolMajorinfo((head, body)) = data {
-                    items.extend(body.row);
-
-                    if head.get_total_count() > page * page_size {
-                        page += 1;
-                    } else {
-                        break; // while loop
-                    }
-                } else {
-                    break; // while loop
-                }
-            } else {
-                return Err(Error::new_unknown(&format!("status: {}", status)));
-            }
-        }
-
-        Ok(items)
+        self.request("/schoolMajorinfo", params).await
     }
 
     /// 학교계열정보
@@ -239,46 +120,7 @@ impl NeisClient {
         &self,
         params: SchoolAflcoInfoParams,
     ) -> Result<Vec<SchoolAflcoInfoItem>, Error> {
-        let mut page = 1;
-        let page_size = 1000;
-        let mut items = Vec::new();
-
-        loop {
-            let query = {
-                let mut query = params.to_serializer();
-                query.append_pair("KEY", &self.api_key);
-                query.append_pair("Type", "json");
-                query.append_pair("pSize", &page_size.to_string());
-                query.append_pair("pIndex", &page.to_string());
-                query.finish()
-            };
-            let url = format!("{}/hub/schulAflcoinfo?{}", Self::BASE_URL, query);
-
-            let res = self.client.get(url.try_into().unwrap()).await?;
-            let status = res.status();
-            let body = res.collect().await?.to_bytes();
-            tracing::trace!(?body);
-
-            if status.is_success() {
-                let data: ResponseBody = serde_json::from_reader(body.reader())?;
-
-                if let ResponseBody::schulAflcoinfo((head, body)) = data {
-                    items.extend(body.row);
-
-                    if head.get_total_count() > page * page_size {
-                        page += 1;
-                    } else {
-                        break; // while loop
-                    }
-                } else {
-                    break; // while loop
-                }
-            } else {
-                return Err(Error::new_unknown(&format!("status: {}", status)));
-            }
-        }
-
-        Ok(items)
+        self.request("/schulAflcoinfo", params).await
     }
 
     /// 학사일정
@@ -302,46 +144,7 @@ impl NeisClient {
         &self,
         params: SchoolScheduleParams,
     ) -> Result<Vec<SchoolScheduleItem>, Error> {
-        let mut page = 1;
-        let page_size = 1000;
-        let mut items = Vec::new();
-
-        loop {
-            let query = {
-                let mut query = params.to_serializer();
-                query.append_pair("KEY", &self.api_key);
-                query.append_pair("Type", "json");
-                query.append_pair("pSize", &page_size.to_string());
-                query.append_pair("pIndex", &page.to_string());
-                query.finish()
-            };
-            let url = format!("{}/hub/SchoolSchedule?{}", Self::BASE_URL, query);
-
-            let res = self.client.get(url.try_into().unwrap()).await?;
-            let status = res.status();
-            let body = res.collect().await?.to_bytes();
-            tracing::trace!(?body);
-
-            if status.is_success() {
-                let data: ResponseBody = serde_json::from_reader(body.reader())?;
-
-                if let ResponseBody::SchoolSchedule((head, body)) = data {
-                    items.extend(body.row);
-
-                    if head.get_total_count() > page * page_size {
-                        page += 1;
-                    } else {
-                        break; // while loop
-                    }
-                } else {
-                    break; // while loop
-                }
-            } else {
-                return Err(Error::new_unknown(&format!("status: {}", status)));
-            }
-        }
-
-        Ok(items)
+        self.request("/SchoolSchedule", params).await
     }
 
     /// 초등학교시간표
@@ -365,46 +168,7 @@ impl NeisClient {
         &self,
         params: ElsTimetableParams,
     ) -> Result<Vec<ElsTimetableItem>, Error> {
-        let mut page = 1;
-        let page_size = 1000;
-        let mut items = Vec::new();
-
-        loop {
-            let query = {
-                let mut query = params.to_serializer();
-                query.append_pair("KEY", &self.api_key);
-                query.append_pair("Type", "json");
-                query.append_pair("pSize", &page_size.to_string());
-                query.append_pair("pIndex", &page.to_string());
-                query.finish()
-            };
-            let url = format!("{}/hub/elsTimetable?{}", Self::BASE_URL, query);
-
-            let res = self.client.get(url.try_into().unwrap()).await?;
-            let status = res.status();
-            let body = res.collect().await?.to_bytes();
-            tracing::trace!(?body);
-
-            if status.is_success() {
-                let data: ResponseBody = serde_json::from_reader(body.reader())?;
-
-                if let ResponseBody::elsTimetable((head, body)) = data {
-                    items.extend(body.row);
-
-                    if head.get_total_count() > page * page_size {
-                        page += 1;
-                    } else {
-                        break; // while loop
-                    }
-                } else {
-                    break; // while loop
-                }
-            } else {
-                return Err(Error::new_unknown(&format!("status: {}", status)));
-            }
-        }
-
-        Ok(items)
+        self.request("/elsTimetable", params).await
     }
 
     /// 중학교시간표
@@ -428,46 +192,7 @@ impl NeisClient {
         &self,
         params: MisTimetableParams,
     ) -> Result<Vec<MisTimetableItem>, Error> {
-        let mut page = 1;
-        let page_size = 1000;
-        let mut items = Vec::new();
-
-        loop {
-            let query = {
-                let mut query = params.to_serializer();
-                query.append_pair("KEY", &self.api_key);
-                query.append_pair("Type", "json");
-                query.append_pair("pSize", &page_size.to_string());
-                query.append_pair("pIndex", &page.to_string());
-                query.finish()
-            };
-            let url = format!("{}/hub/misTimetable?{}", Self::BASE_URL, query);
-
-            let res = self.client.get(url.try_into().unwrap()).await?;
-            let status = res.status();
-            let body = res.collect().await?.to_bytes();
-            tracing::trace!(?body);
-
-            if status.is_success() {
-                let data: ResponseBody = serde_json::from_reader(body.reader())?;
-
-                if let ResponseBody::misTimetable((head, body)) = data {
-                    items.extend(body.row);
-
-                    if head.get_total_count() > page * page_size {
-                        page += 1;
-                    } else {
-                        break; // while loop
-                    }
-                } else {
-                    break; // while loop
-                }
-            } else {
-                return Err(Error::new_unknown(&format!("status: {}", status)));
-            }
-        }
-
-        Ok(items)
+        self.request("/misTimetable", params).await
     }
 
     /// 고등학교시간표
@@ -491,46 +216,7 @@ impl NeisClient {
         &self,
         params: HisTimetableParams,
     ) -> Result<Vec<HisTimetableItem>, Error> {
-        let mut page = 1;
-        let page_size = 1000;
-        let mut items = Vec::new();
-
-        loop {
-            let query = {
-                let mut query = params.to_serializer();
-                query.append_pair("KEY", &self.api_key);
-                query.append_pair("Type", "json");
-                query.append_pair("pSize", &page_size.to_string());
-                query.append_pair("pIndex", &page.to_string());
-                query.finish()
-            };
-            let url = format!("{}/hub/hisTimetable?{}", Self::BASE_URL, query);
-
-            let res = self.client.get(url.try_into().unwrap()).await?;
-            let status = res.status();
-            let body = res.collect().await?.to_bytes();
-            tracing::trace!(?body);
-
-            if status.is_success() {
-                let data: ResponseBody = serde_json::from_reader(body.reader())?;
-
-                if let ResponseBody::hisTimetable((head, body)) = data {
-                    items.extend(body.row);
-
-                    if head.get_total_count() > page * page_size {
-                        page += 1;
-                    } else {
-                        break; // while loop
-                    }
-                } else {
-                    break; // while loop
-                }
-            } else {
-                return Err(Error::new_unknown(&format!("status: {}", status)));
-            }
-        }
-
-        Ok(items)
+        self.request("/hisTimetable", params).await
     }
 
     /// 특수학교시간표
@@ -554,46 +240,7 @@ impl NeisClient {
         &self,
         params: SpsTimetableParams,
     ) -> Result<Vec<SpsTimetableItem>, Error> {
-        let mut page = 1;
-        let page_size = 1000;
-        let mut items = Vec::new();
-
-        loop {
-            let query = {
-                let mut query = params.to_serializer();
-                query.append_pair("KEY", &self.api_key);
-                query.append_pair("Type", "json");
-                query.append_pair("pSize", &page_size.to_string());
-                query.append_pair("pIndex", &page.to_string());
-                query.finish()
-            };
-            let url = format!("{}/hub/spsTimetable?{}", Self::BASE_URL, query);
-
-            let res = self.client.get(url.try_into().unwrap()).await?;
-            let status = res.status();
-            let body = res.collect().await?.to_bytes();
-            tracing::trace!(?body);
-
-            if status.is_success() {
-                let data: ResponseBody = serde_json::from_reader(body.reader())?;
-
-                if let ResponseBody::spsTimetable((head, body)) = data {
-                    items.extend(body.row);
-
-                    if head.get_total_count() > page * page_size {
-                        page += 1;
-                    } else {
-                        break; // while loop
-                    }
-                } else {
-                    break; // while loop
-                }
-            } else {
-                return Err(Error::new_unknown(&format!("status: {}", status)));
-            }
-        }
-
-        Ok(items)
+        self.request("/spsTimetable", params).await
     }
 
     /// 시간표강의실정보
@@ -617,46 +264,7 @@ impl NeisClient {
         &self,
         params: ClassRoomInfoParams,
     ) -> Result<Vec<ClassRoomInfoItem>, Error> {
-        let mut page = 1;
-        let page_size = 1000;
-        let mut items = Vec::new();
-
-        loop {
-            let query = {
-                let mut query = params.to_serializer();
-                query.append_pair("KEY", &self.api_key);
-                query.append_pair("Type", "json");
-                query.append_pair("pSize", &page_size.to_string());
-                query.append_pair("pIndex", &page.to_string());
-                query.finish()
-            };
-            let url = format!("{}/hub/tiClrminfo?{}", Self::BASE_URL, query);
-
-            let res = self.client.get(url.try_into().unwrap()).await?;
-            let status = res.status();
-            let body = res.collect().await?.to_bytes();
-            tracing::trace!(?body);
-
-            if status.is_success() {
-                let data: ResponseBody = serde_json::from_reader(body.reader())?;
-
-                if let ResponseBody::tiClrminfo((head, body)) = data {
-                    items.extend(body.row);
-
-                    if head.get_total_count() > page * page_size {
-                        page += 1;
-                    } else {
-                        break; // while loop
-                    }
-                } else {
-                    break; // while loop
-                }
-            } else {
-                return Err(Error::new_unknown(&format!("status: {}", status)));
-            }
-        }
-
-        Ok(items)
+        self.request("/tiClrminfo", params).await
     }
 
     /// 학원교습소정보
@@ -680,46 +288,7 @@ impl NeisClient {
         &self,
         params: AcademyInfoParams,
     ) -> Result<Vec<AcademyInfoItem>, Error> {
-        let mut page = 1;
-        let page_size = 1000;
-        let mut items = Vec::new();
-
-        loop {
-            let query = {
-                let mut query = params.to_serializer();
-                query.append_pair("KEY", &self.api_key);
-                query.append_pair("Type", "json");
-                query.append_pair("pSize", &page_size.to_string());
-                query.append_pair("pIndex", &page.to_string());
-                query.finish()
-            };
-            let url = format!("{}/hub/acaInsTiInfo?{}", Self::BASE_URL, query);
-
-            let res = self.client.get(url.try_into().unwrap()).await?;
-            let status = res.status();
-            let body = res.collect().await?.to_bytes();
-            tracing::trace!(?body);
-
-            if status.is_success() {
-                let data: ResponseBody = serde_json::from_reader(body.reader())?;
-
-                if let ResponseBody::acaInsTiInfo((head, body)) = data {
-                    items.extend(body.row);
-
-                    if head.get_total_count() > page * page_size {
-                        page += 1;
-                    } else {
-                        break; // while loop
-                    }
-                } else {
-                    break; // while loop
-                }
-            } else {
-                return Err(Error::new_unknown(&format!("status: {}", status)));
-            }
-        }
-
-        Ok(items)
+        self.request("/acaInsTiInfo", params).await
     }
 
     /// 급식식단정보
@@ -743,20 +312,29 @@ impl NeisClient {
         &self,
         params: MealServiceParams,
     ) -> Result<Vec<MealServiceItem>, Error> {
+        self.request("/mealServiceDietInfo", params).await
+    }
+
+    pub async fn request<P, T>(&self, resouce: &str, params: P) -> Result<Vec<T>, Error>
+    where
+        P: ToQueryString,
+        T: ExtractFromResponse,
+    {
         let mut page = 1;
         let page_size = 1000;
         let mut items = Vec::new();
 
         loop {
-            let query = {
-                let mut query = params.to_serializer();
-                query.append_pair("KEY", &self.api_key);
-                query.append_pair("Type", "json");
-                query.append_pair("pSize", &page_size.to_string());
-                query.append_pair("pIndex", &page.to_string());
-                query.finish()
-            };
-            let url = format!("{}/hub/mealServiceDietInfo?{}", Self::BASE_URL, query);
+            let common_params = format!(
+                "KEY={}&Type=json&pIndex={}&pSize={}",
+                self.api_key, page, page_size
+            );
+            let url = format!(
+                "https://open.neis.go.kr/hub/{}?{}&{}",
+                resouce,
+                common_params,
+                params.to_query_string()
+            );
 
             let res = self.client.get(url.try_into().unwrap()).await?;
             let status = res.status();
@@ -766,14 +344,13 @@ impl NeisClient {
             if status.is_success() {
                 let data: ResponseBody = serde_json::from_reader(body.reader())?;
 
-                if let ResponseBody::mealServiceDietInfo((head, body)) = data {
-                    items.extend(body.row);
+                let (total, row) = T::extract_from_response(data);
 
-                    if head.get_total_count() > page * page_size {
-                        page += 1;
-                    } else {
-                        break; // while loop
-                    }
+                items.extend(row);
+
+                // 데이터가 없는 경우에도 total 이 0 이므로 loop 를 빠져나감
+                if total > page * page_size {
+                    page += 1;
                 } else {
                     break; // while loop
                 }

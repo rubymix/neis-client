@@ -1,4 +1,5 @@
 #![allow(non_snake_case)]
+use super::ToQueryString;
 use super::{deserialize_i32_from_string, deserialize_u8_from_string};
 use form_urlencoded::Serializer;
 use serde::{Deserialize, Serialize};
@@ -76,8 +77,10 @@ impl HisTimetableParams {
         self.TI_TO_YMD = Some(format!("{:04}{:02}{:02}", year, month, day));
         self
     }
+}
 
-    pub fn to_serializer(&self) -> Serializer<String> {
+impl ToQueryString for HisTimetableParams {
+    fn to_query_string(&self) -> String {
         let mut serializer = Serializer::new(String::new());
 
         serializer.append_pair("ATPT_OFCDC_SC_CODE", &self.ATPT_OFCDC_SC_CODE);
@@ -116,7 +119,7 @@ impl HisTimetableParams {
             serializer.append_pair("TI_TO_YMD", s);
         }
 
-        serializer
+        serializer.finish()
     }
 }
 

@@ -31,6 +31,10 @@ pub enum YesOrNo {
     N,
 }
 
+pub trait ToQueryString {
+    fn to_query_string(&self) -> String;
+}
+
 fn deserialize_u8_from_string<'de, D>(deserializer: D) -> Result<u8, D::Error>
 where
     D: serde::de::Deserializer<'de>,

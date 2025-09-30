@@ -1,5 +1,6 @@
 #![allow(non_snake_case)]
 use super::deserialize_i32_from_f64;
+use super::ToQueryString;
 use form_urlencoded::Serializer;
 use serde::{Deserialize, Serialize};
 
@@ -43,8 +44,10 @@ impl MealServiceParams {
         self.MLSV_TO_YMD = Some(format!("{:04}{:02}{:02}", year, month, day));
         self
     }
+}
 
-    pub fn to_serializer(&self) -> Serializer<String> {
+impl ToQueryString for MealServiceParams {
+    fn to_query_string(&self) -> String {
         let mut serializer = Serializer::new(String::new());
 
         serializer.append_pair("ATPT_OFCDC_SC_CODE", &self.ATPT_OFCDC_SC_CODE);
@@ -62,7 +65,7 @@ impl MealServiceParams {
             serializer.append_pair("MLSV_TO_YMD", s);
         }
 
-        serializer
+        serializer.finish()
     }
 }
 
