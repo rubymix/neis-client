@@ -35,15 +35,15 @@ impl SchoolScheduleParams {
         }
     }
 
-    pub fn ymd(mut self, year: i32, month: u32, day: u32) -> Self {
+    pub fn ymd(mut self, year: i32, month: u8, day: u8) -> Self {
         self.AA_YMD = Some(format!("{:04}{:02}{:02}", year, month, day));
         self
     }
-    pub fn from_ymd(mut self, year: i32, month: u32, day: u32) -> Self {
+    pub fn from_ymd(mut self, year: i32, month: u8, day: u8) -> Self {
         self.AA_FROM_YMD = Some(format!("{:04}{:02}{:02}", year, month, day));
         self
     }
-    pub fn to_ymd(mut self, year: i32, month: u32, day: u32) -> Self {
+    pub fn to_ymd(mut self, year: i32, month: u8, day: u8) -> Self {
         self.AA_TO_YMD = Some(format!("{:04}{:02}{:02}", year, month, day));
         self
     }

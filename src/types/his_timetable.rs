@@ -61,7 +61,7 @@ impl HisTimetableParams {
         self.SEM = Some(sem.to_string());
         self
     }
-    pub fn ymd(mut self, year: i32, month: u32, day: u32) -> Self {
+    pub fn ymd(mut self, year: i32, month: u8, day: u8) -> Self {
         self.ALL_TI_YMD = Some(format!("{:04}{:02}{:02}", year, month, day));
         self
     }
@@ -69,11 +69,11 @@ impl HisTimetableParams {
         self.GRADE = Some(grade.to_string());
         self
     }
-    pub fn from_ymd(mut self, year: i32, month: u32, day: u32) -> Self {
+    pub fn from_ymd(mut self, year: i32, month: u8, day: u8) -> Self {
         self.TI_FROM_YMD = Some(format!("{:04}{:02}{:02}", year, month, day));
         self
     }
-    pub fn to_ymd(mut self, year: i32, month: u32, day: u32) -> Self {
+    pub fn to_ymd(mut self, year: i32, month: u8, day: u8) -> Self {
         self.TI_TO_YMD = Some(format!("{:04}{:02}{:02}", year, month, day));
         self
     }
