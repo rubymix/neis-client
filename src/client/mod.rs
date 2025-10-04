@@ -3,7 +3,7 @@ mod response;
 use crate::error::Error;
 use crate::types::*;
 use http_body_util::{BodyExt, Empty};
-use hyper::body::{Buf, Bytes};
+use hyper::body::Bytes;
 use hyper_tls::HttpsConnector;
 use hyper_util::{
     client::legacy::{Client, connect::HttpConnector},
@@ -342,7 +342,7 @@ impl NeisClient {
             tracing::trace!(?body);
 
             if status.is_success() {
-                let data: ResponseBody = serde_json::from_reader(body.reader())?;
+                let data: ResponseBody = serde_json::from_slice(&body)?;
 
                 let (total, row) = T::extract_from_response(data);
                 println!("total: {}, page: {}, page_size: {}", total, page, page_size);
