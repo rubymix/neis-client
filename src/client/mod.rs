@@ -207,7 +207,7 @@ impl NeisClient {
     /// let api_key = std::env::var("NEIS_API_KEY").unwrap();
     /// let client = NeisClient::new(&api_key);
     ///
-    /// let params = HisTimetableParams::new("B10", "7010959").grade(3).sem(2)
+    /// let params = HisTimetableParams::new("B10", "7010959").grade(3).sem(2);
     /// let items = client.his_timetable(params).await?;
     /// # Ok(())
     /// # }
@@ -345,7 +345,6 @@ impl NeisClient {
                 let data: ResponseBody = serde_json::from_slice(&body)?;
 
                 let (total, row) = T::extract_from_response(data);
-                println!("total: {}, page: {}, page_size: {}", total, page, page_size);
 
                 items.extend(row);
 
