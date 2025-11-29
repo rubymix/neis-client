@@ -10,16 +10,21 @@ license-file = "LICENSE"
 
 [dependencies]
 form_urlencoded = "1.2"
-http-body-util = "0.1"
-hyper = { version = "1" }
-hyper-tls = "0.6"
-hyper-util = { version = "0.1", features = ["client", "http1"] }
 serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-tracing = "0.1"
+
+http-body-util = { version = "0.1", optional = true }
+hyper = { version = "1", optional = true }
+hyper-tls = { version = "0.6", optional = true }
+hyper-util = { version = "0.1", features = ["client", "http1"], optional = true }
+serde_json = { version = "1.0", optional = true }
+tracing = { version = "0.1", optional = true }
 
 [target.'cfg(target_env = "musl")'.dependencies]
-hyper-tls = { version = "0.6", features = ["vendored"] }
+hyper-tls = { version = "0.6", features = ["vendored"], optional = true }
 
 [dev-dependencies]
 tokio = { version = "1", default-features = false, features = ["macros"] }
+
+[features]
+default = ["client"]
+client = ["dep:http-body-util", "dep:hyper", "dep:hyper-tls", "dep:hyper-util", "dep:serde_json", "dep:tracing"]
