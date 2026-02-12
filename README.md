@@ -7,12 +7,12 @@ https://open.neis.go.kr/
 
 ```toml
 [dependencies]
-neis-client = "1.1"
+neis-client = "1.2"
 ```
 
 ## 타입만 사용
 
 ```toml
 [dependencies]
-neis-client = { version = "1.1", default-features = false }
+neis-client = { version = "1.2", default-features = false }
 ```
